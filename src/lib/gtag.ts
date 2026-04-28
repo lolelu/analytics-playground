@@ -1,5 +1,5 @@
-// GA4 measurement ID — set NEXT_PUBLIC_GA_MEASUREMENT_ID in .env.local to activate
-export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
+// Google Tag Manager container ID — set NEXT_PUBLIC_GTM_ID in .env.local
+export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? "";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Types
@@ -15,43 +15,60 @@ export interface GaItem {
   index?: number;
 }
 
-// gtag is injected by the script tag in layout.tsx
 declare global {
   interface Window {
-    gtag: (...args: unknown[]) => void;
-    dataLayer: unknown[];
+    dataLayer: Record<string, unknown>[];
   }
 }
 
-// Guard — silently no-op when GA is not configured
-function track(event: string, params: Record<string, unknown>): void {
-  if (!GA_MEASUREMENT_ID || typeof window === "undefined" || !window.gtag) return;
-  window.gtag("event", event, params);
+// ──────────────────────────────────────────────────────────────────────────────
+// Internal push helper
+// Guards on GTM_ID being set and runs only in the browser.
+// ──────────────────────────────────────────────────────────────────────────────
+
+function push(obj: Record<string, unknown>): void {
+  if (!GTM_ID || typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(obj);
+}
+
+// Always clear the previous ecommerce object before pushing a new one.
+// This prevents events from bleeding into each other in GA4.
+function pushEcommerce(event: string, ecommerce: Record<string, unknown>): void {
+  push({ ecommerce: null }); // clear
+  push({ event, ecommerce });
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Page view (called on route change)
+// Page view — fired on every client-side route change
+// GTM should have a trigger on the custom "page_view" event (or "History Change")
 // ──────────────────────────────────────────────────────────────────────────────
 
 export function pageView(url: string): void {
-  if (!GA_MEASUREMENT_ID || typeof window === "undefined" || !window.gtag) return;
-  window.gtag("config", GA_MEASUREMENT_ID, { page_path: url });
+  push({ event: "page_view", page_path: url });
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// E-commerce events
+// E-commerce events (GA4 Enhanced E-commerce schema)
 // ──────────────────────────────────────────────────────────────────────────────
 
 export function viewItemList(items: GaItem[], listName: string): void {
-  track("view_item_list", { item_list_name: listName, items });
+  pushEcommerce("view_item_list", {
+    item_list_name: listName,
+    items,
+  });
 }
 
 export function viewItem(item: GaItem): void {
-  track("view_item", { currency: "EUR", value: item.price, items: [item] });
+  pushEcommerce("view_item", {
+    currency: "EUR",
+    value: item.price,
+    items: [item],
+  });
 }
 
 export function addToCart(item: GaItem): void {
-  track("add_to_cart", {
+  pushEcommerce("add_to_cart", {
     currency: "EUR",
     value: item.price * (item.quantity ?? 1),
     items: [item],
@@ -59,7 +76,7 @@ export function addToCart(item: GaItem): void {
 }
 
 export function removeFromCart(item: GaItem): void {
-  track("remove_from_cart", {
+  pushEcommerce("remove_from_cart", {
     currency: "EUR",
     value: item.price * (item.quantity ?? 1),
     items: [item],
@@ -67,11 +84,19 @@ export function removeFromCart(item: GaItem): void {
 }
 
 export function viewCart(items: GaItem[], value: number): void {
-  track("view_cart", { currency: "EUR", value, items });
+  pushEcommerce("view_cart", {
+    currency: "EUR",
+    value,
+    items,
+  });
 }
 
 export function beginCheckout(items: GaItem[], value: number): void {
-  track("begin_checkout", { currency: "EUR", value, items });
+  pushEcommerce("begin_checkout", {
+    currency: "EUR",
+    value,
+    items,
+  });
 }
 
 export function addPaymentInfo(
@@ -79,7 +104,12 @@ export function addPaymentInfo(
   value: number,
   paymentType: string
 ): void {
-  track("add_payment_info", { currency: "EUR", value, payment_type: paymentType, items });
+  pushEcommerce("add_payment_info", {
+    currency: "EUR",
+    value,
+    payment_type: paymentType,
+    items,
+  });
 }
 
 export function purchase(
@@ -87,7 +117,7 @@ export function purchase(
   items: GaItem[],
   value: number
 ): void {
-  track("purchase", {
+  pushEcommerce("purchase", {
     transaction_id: transactionId,
     currency: "EUR",
     value,
