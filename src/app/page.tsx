@@ -12,7 +12,10 @@ export default function HomePage() {
     <div>
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-indigo-950 via-indigo-800 to-violet-700 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10" style={{ position: "absolute" }}>
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{ position: "absolute" }}
+        >
           <Image
             src="https://picsum.photos/seed/hero/1600/700"
             alt=""
@@ -30,9 +33,10 @@ export default function HomePage() {
             <span className="text-violet-300">technology.</span>
           </h1>
           <p className="text-lg text-indigo-200 max-w-md">
-            Explore our curated collection of clothing and electronics. Everything you need, nothing you don&apos;t.
+            Explore our curated collection of clothing and electronics.
+            Everything you need, nothing you don&apos;t.
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3" id="home-banner">
             <Link
               href="/category/clothing"
               className="inline-flex items-center gap-2 bg-white text-indigo-900 font-semibold px-6 py-3 rounded-full hover:bg-indigo-50 transition-colors"
@@ -51,7 +55,9 @@ export default function HomePage() {
 
       {/* Category cards */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Shop by Category</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Shop by Category
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link
             href="/category/clothing"
@@ -69,7 +75,9 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <Tag className="w-4 h-4 text-white/70" />
-                  <span className="text-white/70 text-sm font-medium">12 products</span>
+                  <span className="text-white/70 text-sm font-medium">
+                    12 products
+                  </span>
                 </div>
                 <h3 className="text-2xl font-bold text-white">Clothing</h3>
               </div>
@@ -95,7 +103,9 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <Zap className="w-4 h-4 text-white/70" />
-                  <span className="text-white/70 text-sm font-medium">12 products</span>
+                  <span className="text-white/70 text-sm font-medium">
+                    12 products
+                  </span>
                 </div>
                 <h3 className="text-2xl font-bold text-white">Electronics</h3>
               </div>
@@ -110,8 +120,13 @@ export default function HomePage() {
       {/* Featured */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Featured Products</h2>
-          <Link href="/category/clothing" className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Featured Products
+          </h2>
+          <Link
+            href="/category/clothing"
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+          >
             View all →
           </Link>
         </div>
@@ -128,7 +143,10 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">New Arrivals</h2>
-              <Link href="/category/electronics" className="text-sm font-medium text-indigo-300 hover:text-white">
+              <Link
+                href="/category/electronics"
+                className="text-sm font-medium text-indigo-300 hover:text-white"
+              >
                 View all →
               </Link>
             </div>
